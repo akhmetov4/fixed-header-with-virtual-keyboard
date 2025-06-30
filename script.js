@@ -1,16 +1,24 @@
 const thresholdRatio = 0.75;
 let isKeyboardOpen = false;
 
-function handleScroll() {
-  const header = document.querySelector(".header");
+let scrollAnimationFrame = null;
 
-  if (isKeyboardOpen) {
-    console.log("keyboard open on scroll");
-    header.style.top = `${window.scrollY}px`;
-  } else {
-    console.log("keyboard closed on scroll");
-    header.style.top = "0";
-  }
+function handleScroll() {
+  if (scrollAnimationFrame) return;
+
+  scrollAnimationFrame = requestAnimationFrame(() => {
+    const header = document.querySelector(".header");
+
+    if (isKeyboardOpen) {
+      console.log("keyboard open on scroll");
+      header.style.top = `${window.scrollY}px`;
+    } else {
+      console.log("keyboard closed on scroll");
+      header.style.top = "0";
+    }
+
+    scrollAnimationFrame = null;
+  });
 }
 
 function handleResize(event) {
