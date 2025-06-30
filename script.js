@@ -1,10 +1,9 @@
-const textarea = document.querySelector("textarea");
-
-const header = document.querySelector(".header");
-
 const thresholdRatio = 0.75;
+let isKeyboardOpen = false;
 
 function handleScroll() {
+  const header = document.querySelector(".header");
+
   if (isKeyboardOpen) {
     console.log("keyboard open on scroll");
     header.style.top = `${window.scrollY}px`;
@@ -14,7 +13,9 @@ function handleScroll() {
   }
 }
 
-function handleResize() {
+function handleResize(event) {
+  const header = document.querySelector(".header");
+
   console.log("resize");
   const viewport = event.target;
   const viewportHeight = viewport.height * viewport.scale;
