@@ -11,7 +11,7 @@ function handleScroll() {
 
     if (isKeyboardOpen) {
       console.log("keyboard open on scroll");
-      header.style.top = `${window.visualViewport.offsetTop}px`;
+      header.style.top = `${window.scrollY}px`;
     } else {
       console.log("keyboard closed on scroll");
       header.style.top = "0";
@@ -28,10 +28,14 @@ function handleResize(event) {
   const viewport = event.target;
   const viewportHeight = viewport.height * viewport.scale;
   isKeyboardOpen = viewportHeight / window.screen.height < thresholdRatio;
+  console.log("viewportHeight", viewportHeight);
+  console.log("window.screen.height", window.screen.height);
+  console.log("thresholdRatio", thresholdRatio);
+  console.log("isKeyboardOpen", isKeyboardOpen);
   if (isKeyboardOpen) {
     console.log("keyboard open");
     header.style.position = "absolute";
-    header.style.top = `${window.visualViewport.offsetTop}px`;
+    header.style.top = `${window.scrollY}px`;
   } else {
     console.log("keyboard closed");
     header.style.position = "fixed";
