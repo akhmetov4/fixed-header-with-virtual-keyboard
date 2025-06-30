@@ -5,7 +5,13 @@ const header = document.querySelector(".header");
 const thresholdRatio = 0.75;
 
 function handleScroll() {
-  console.log("scroll");
+  if (isKeyboardOpen) {
+    console.log("keyboard open on scroll");
+    header.style.top = `${window.scrollY}px`;
+  } else {
+    console.log("keyboard closed on scroll");
+    header.style.top = "0";
+  }
 }
 
 function handleResize() {
@@ -15,8 +21,12 @@ function handleResize() {
   isKeyboardOpen = viewportHeight / window.screen.height < thresholdRatio;
   if (isKeyboardOpen) {
     console.log("keyboard open");
+    header.style.position = "absolute";
+    header.style.top = `${window.scrollY}px`;
   } else {
     console.log("keyboard closed");
+    header.style.position = "fixed";
+    header.style.top = "0";
   }
 }
 
