@@ -11,10 +11,10 @@ function handleScroll() {
 
     if (isKeyboardOpen) {
       console.log("keyboard open on scroll");
-      header.style.top = `${window.scrollY}px`;
+      header.style.transform = `translateY(${window.scrollY}px)`;
     } else {
       console.log("keyboard closed on scroll");
-      header.style.top = "0";
+      header.style.transform = "translateY(0)";
     }
 
     scrollAnimationFrame = null;
@@ -35,11 +35,11 @@ function handleResize(event) {
   if (isKeyboardOpen) {
     console.log("keyboard open");
     header.style.position = "absolute";
-    header.style.top = `${window.scrollY}px`;
+    header.style.transform = `translateY(${window.scrollY}px)`;
   } else {
     console.log("keyboard closed");
     header.style.position = "fixed";
-    header.style.top = "0";
+    header.style.transform = "translateY(0)";
   }
 }
 
