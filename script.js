@@ -4,21 +4,13 @@ let isKeyboardOpen = false;
 let scrollAnimationFrame = null;
 
 function handleScroll() {
-  if (scrollAnimationFrame) return;
+  const header = document.querySelector(".header");
 
-  scrollAnimationFrame = requestAnimationFrame(() => {
-    const header = document.querySelector(".header");
-
-    if (isKeyboardOpen) {
-      console.log("keyboard open on scroll");
-      header.style.transform = `translateY(${window.scrollY}px)`;
-    } else {
-      console.log("keyboard closed on scroll");
-      header.style.transform = "translateY(0)";
-    }
-
-    scrollAnimationFrame = null;
-  });
+  if (isKeyboardOpen) {
+    header.style.transform = `translateY(${window.scrollY}px)`;
+  } else {
+    header.style.transform = "translateY(0)";
+  }
 }
 
 function handleResize(event) {
@@ -43,6 +35,6 @@ function handleResize(event) {
   }
 }
 
-window.addEventListener("scroll", handleScroll);
+window.addEventListener("scroll", handleScroll, { passive: true });
 
 window.visualViewport.addEventListener("resize", handleResize);
