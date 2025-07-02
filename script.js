@@ -1,15 +1,22 @@
 const thresholdRatio = 0.75;
 let isKeyboardOpen = false;
 
-let scrollAnimationFrame = null;
+let ticking = false;
 
 function handleScroll() {
-  const header = document.querySelector(".header");
+  if (!ticking) {
+    const header = document.querySelector(".header");
 
-  if (isKeyboardOpen) {
-    header.style.transform = `translateY(${window.scrollY}px)`;
-  } else {
-    header.style.transform = "translateY(0)";
+    if (isKeyboardOpen) {
+      header.style.transform = `translateY(${window.scrollY}px)`;
+    } else {
+      header.style.transform = "translateY(0)";
+    }
+
+    requestAnimationFrame(() => {
+      ticking = false;
+    });
+    ticking = true;
   }
 }
 
