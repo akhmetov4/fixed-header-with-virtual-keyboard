@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <title>Smooth Fixed Header - No Flicker</title>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            height: 100px;
+            width: 100%;
+            background: red;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            /* Critical: Prevent any transitions or animations */
+            transition: none !important;
+            /* Force hardware acceleration from the start */
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
+        }
+
+        .content {
+            padding-top: 100px;
+        }
+
+        .section {
+            height: 300px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #ccc;
+            background: #f9f9f9;
+        }
+
+        textarea {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .debug {
+            position: fixed;
+            top: 110px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Smooth Fixed Header</div>
+    
+    <div class="debug" id="debug">
+        <div>Scroll Position: <span id="scrollPos">0</span></div>
+        <div>Keyboard Open: <span id="keyboardStatus">false</span></div>
+        <div>Header Mode: <span id="headerMode">fixed</span></div>
+        <div>Transform: <span id="transform">translate3d(0, 0, 0)</span></div>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <h2>Section 1</h2>
+            <p>This implementation removes ALL sources of flickering by using immediate scroll updates with proper hardware acceleration.</p>
+        </div>
+        
+        <div class="section">
+            <h2>Section 2 - Test Area</h2>
+            <textarea placeholder="Focus here to open keyboard and test smooth scrolling" rows="5"></textarea>
+            <p>When you focus the textarea, the keyboard should open and the header should move smoothly with scroll.</p>
+        </div>
+        
+        <div class="section">
+            <h2>Section 3</h2>
+            <p>The key fixes: No requestAnimationFrame, no transitions, immediate transform updates, and consistent hardware acceleration.</p>
+        </div>
+        
+        <div style="height: 1000px; background: linear-gradient(to bottom, #e0e0e0, #c0c0c0); padding: 20px;">
+            <h2>Long Content Area</h2>
+            <p>Scroll through this area to test the smoothness. The header should move without any flickering or delay.</p>
+            <br><br>
+            <p>More content...</p>
+            <br><br>
+            <p>Even more content to scroll through...</p>
+            <br><br>
+            <p>Keep scrolling...</p>
+            <br><br>
+            <p>Almost there...</p>
+            <br><br>
+            <p>More scrolling content...</p>
+        </div>
+    </div>
+
+    <script>
+        const thresholdRatio = 0.75;
+        let isKeyboardOpen = false;
+        let header = null;
+
+        // Initialize header reference
+        function init() {
+            header = document.querySelector('.header');
+            
+            // Ensure header starts with proper hardware acceleration
+            header.style.transform = 'translate3d(0, 0, 0)';
+            header.style.willChange = 'transform';
+            
+            updateDebugInfo();
+        }
+
+        // Ultra-smooth scroll handler - no delays, no RAF
+        function handleScroll() {
+            if (!header || !isKeyboardOpen) return;
+            
+            // Get scroll position and apply immediately
+            const scrollY = window.scrollY;
+            header.style.transform = `translate3d(0, ${scrollY}px, 0)`;
+            
+            updateDebugInfo();
+        }
+
+        // Handle keyboard visibility changes
+        function handleResize(event) {
+            if (!header) return;
+            
+            const viewport = event.target;
+            const viewportHeight = viewport.height * viewport.scale;
+            const wasKeyboardOpen = isKeyboardOpen;
+            
+            isKeyboardOpen = viewportHeight / window.screen.height < thresholdRatio;
+            
+            if (isKeyboardOpen !== wasKeyboardOpen) {
+                if (isKeyboardOpen) {
+                    // Keyboard opened - switch to absolute positioning
+                    header.style.position = 'absolute';
+                    const scrollY = window.scrollY;
+                    header.style.transform = `translate3d(0, ${scrollY}px, 0)`;
+                } else {
+                    // Keyboard closed - switch back to fixed
+                    header.style.position = 'fixed';
+                    header.style.transform = 'translate3d(0, 0, 0)';
+                }
+            }
+            
+            updateDebugInfo();
+        }
+
+        // Debug information
+        function updateDebugInfo() {
+            if (!header) return;
+            
+            document.getElementById('scrollPos').textContent = Math.round(window.scrollY);
+            document.getElementById('keyboardStatus').textContent = isKeyboardOpen;
+            document.getElementById('headerMode').textContent = header.style.position || 'fixed';
+            document.getElementById('transform').textContent = header.style.transform || 'translate3d(0, 0, 0)';
+        }
+
+        // Event listeners with optimal settings
+        window.addEventListener('scroll', handleScroll, { 
+            passive: true,  // Don't block scrolling
+            capture: false  // Use bubbling phase
+        });
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleResize);
+        }
+
+        // Initialize when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Additional optimization: Prevent any layout thrashing
+        document.addEventListener('DOMContentLoaded', () => {
+            // Force a reflow to ensure everything is properly laid out
+            document.body.offsetHeight;
+        });
+    </script>
+</body>
+</html>
